@@ -74,11 +74,11 @@ class SiriProxy::Plugin::InsteonSensors < SiriProxy::Plugin
         return true
      end
    end
- listen_for/^Are the kitchen doors open/i do
+    listen_for/^Are the ([a-z]*) (?:open|closed)(?: in the | in my )?(.*)?/i do |roomname,openCloseStatus|
     request_completed
- end
+    end
     
- listen_for /^(?:Check the sensors|Security check|Check the security sensors)(?: in the | in my |)?(.*)?/i do |roomname|
+ listen_for /^(?:Check the sensors|Security check|Check the security sensors)(?: in the | in my )?(.*)?/i do |roomname|
     if (roomname == "leaving")
         roomname = "living room"
     end
