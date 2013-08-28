@@ -75,7 +75,7 @@ class SiriProxy::Plugin::InsteonSensors < SiriProxy::Plugin
      end
    end
  listen_for/^Are the kitchen doors open/i do
- 
+    request_completed
  end
     
  listen_for /^(?:Check the sensors|Security check|Check the security sensors)(?: in the | in my |)?(.*)?/i do |roomname|
