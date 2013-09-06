@@ -74,15 +74,19 @@ class SiriProxy::Plugin::InsteonSensors < SiriProxy::Plugin
         return true
      end
    end
-    listen_for/^Are the ([a-z]*) (?:open|closed)(?: in the | in my )?(.*)?/i do |roomname,openCloseStatus|
+    #    listen_for/^Are the ([a-z]*) (?:open|closed)(?: in the | in my )?(.*)?/i do |roomname,openCloseStatus|
+    #request_completed
+    #end
+  listen_for /^(?:How do I|How can I|What can I|Do I|How I|How are you|Show the commands for|Show the commands to|What are the commands for) (?:control |do with |controlling |do at )?(?:the )?(?:sensors|sensor)/i do
+    say "Here are the commands for controlling the sensors:\n\nCheck the sensor status for the room your in:\n  \"Security Check\"\n\nCheck the sensor status for a specific room:\n  \"Security Check in the living room\"\n\nCheck the sensor status in the entire house/apartment:\n  \"Security Check everywhere\"",spoken: "Here are the commands for controlling the security sensors"
     request_completed
-    end
-    
+  end
+
  listen_for /^(?:Check the sensors|Security check|Check the security sensors)(?: in the | in my )?(.*)?/i do |roomname|
     if (roomname == "leaving")
         roomname = "living room"
     end
-    if (roomname == ("house") || roomname == (" house") || roomname == (" whole house") || roomname == ("whole house") || roomname == (" everywhere") || roomname == ("Holthaus")|| roomname == ("apartment")|| roomname == (" apartment") || roomname == ("whole apartment")|| roomname == (" whole apartment"))
+    if (roomname == ("house") || roomname == (" house") || roomname == (" whole house") || roomname == ("whole house") || roomname == (" everywhere") || roomname == ("Holthaus")|| roomname == ("apartment")|| roomname == (" apartment") || roomname == ("whole apartment")|| roomname == (" whole apartment")|| roomname == (""))
         case roomname
             when 'house',' house', ' whole house', 'whole house', ' Holthaus'
                 housename = "in the house"
@@ -94,11 +98,7 @@ class SiriProxy::Plugin::InsteonSensors < SiriProxy::Plugin
         currentLoc = "all"
     end
     if (roomname == "")
-        deviceMAC = %x[arp -an | grep '(#{self.manager.device_ip})' | cut -d\\  -f4]
-        currentLoc = find_active_room(deviceMAC)
-        if (currentLoc == false)
-            say "I don't know where you are.  Please tell me what room you are in."
-        end
+        currentLoc = "all"
     else
         if (currentLoc != "all")
             currentLoc = roomname
@@ -107,7 +107,7 @@ class SiriProxy::Plugin::InsteonSensors < SiriProxy::Plugin
     if (currentLoc == "all" || @roomlist.has_key?(currentLoc))
         if (has_sensors(currentLoc) == true)
             if (currentLoc == "all")
-                say "Here is the status of sensors #{housename}"
+                #say "Here is the status of sensors #{housename}"
                 @roomlist.each { |room|
                     if (has_sensors(room[0]))
                         @roomlist[room[0]]["sensors"].each do |sensor|
@@ -120,7 +120,7 @@ class SiriProxy::Plugin::InsteonSensors < SiriProxy::Plugin
                     end
                 }
             else
-                say "Here is the status of the sensors in the #{currentLoc}:"
+                #say "Here is the status of the sensors in the #{currentLoc}:"
                 @roomlist.each { |room|
                     if (room[0] == currentLoc)
                         @roomlist[room[0]]["sensors"].each do |sensor|
